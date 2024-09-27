@@ -55,6 +55,8 @@ abstract class CommonApp : Application(), WorkManagerConfiguration.Provider {
         themeManager.init()
         messageListWidgetManager.init()
 
+        DynamicColors.applyToActivitiesIfAvailable(this)
+
         messagingListenerProvider.listeners.forEach { listener ->
             messagingController.addListener(listener)
         }
