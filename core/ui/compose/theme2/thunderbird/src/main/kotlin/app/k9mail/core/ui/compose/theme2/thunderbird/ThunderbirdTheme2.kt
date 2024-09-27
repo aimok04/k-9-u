@@ -16,7 +16,7 @@ import app.k9mail.core.ui.compose.theme2.default.defaultTypography
 @Composable
 fun ThunderbirdTheme2(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val images = ThemeImages(

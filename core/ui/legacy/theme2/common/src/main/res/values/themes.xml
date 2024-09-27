@@ -66,8 +66,8 @@
     </style>
 
     <style name="Theme2.Main.Dark" parent="Theme2.Main.Dark.Common">
-        <item name="android:statusBarColor">?attr/colorSurfaceContainer</item>
-        <item name="android:navigationBarColor">?attr/colorSurfaceContainer</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
     </style>
 
     <style name="Theme2.Main.DayNight" parent="Theme2.Main.Light" />
