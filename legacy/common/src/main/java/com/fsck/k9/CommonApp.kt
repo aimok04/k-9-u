@@ -12,6 +12,7 @@ import com.fsck.k9.job.WorkManagerConfigurationProvider
 import com.fsck.k9.notification.NotificationChannelManager
 import com.fsck.k9.ui.base.AppLanguageManager
 import com.fsck.k9.ui.base.extensions.currentLocale
+import com.google.android.material.color.DynamicColors
 import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope

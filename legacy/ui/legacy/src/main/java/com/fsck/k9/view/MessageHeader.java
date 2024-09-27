@@ -198,7 +198,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         if (showAccountChip) {
             accountNameView.setVisibility(View.VISIBLE);
             accountNameView.setText(account.getDisplayName());
-            accountNameView.setChipBackgroundColor(ColorStateList.valueOf(account.getChipColor()));
         } else {
             accountNameView.setVisibility(View.GONE);
         }

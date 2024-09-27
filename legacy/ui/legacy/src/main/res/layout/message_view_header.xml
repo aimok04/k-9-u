@@ -29,6 +29,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:textEndPadding="6sp"
             app:textStartPadding="8sp"
+            app:chipBackgroundColor="?colorPrimaryContainer"
+            app:chipStrokeColor="@android:color/transparent"
             tools:chipBackgroundColor="#1976D2"
             tools:text="Account name"
             />

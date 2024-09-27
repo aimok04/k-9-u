@@ -3,13 +3,17 @@ package app.k9mail.feature.navigation.drawer
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
-import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -97,7 +101,13 @@ class LegacyDrawer(
     private var unifiedInboxSelected: Boolean = false
     private val textColor: Int
     private var selectedTextColor: ColorStateList? = null
-    private var selectedBackgroundColor: Int = 0
+    private var selectedBackgroundColor: Int = sliderView.context.getColor(
+        if (themeManager.appTheme == Theme.DARK) {
+            android.R.color.system_secondary_container_dark
+        } else {
+            android.R.color.system_secondary_container_light
+        },
+    )
     private var folderBadgeStyle: BadgeStyle? = null
     private var openedAccountUuid: String? = null
     private var openedFolderId: Long? = null
@@ -124,6 +134,8 @@ class LegacyDrawer(
         sliderView.setSavedInstance(savedInstanceState)
         headerView.withSavedInstance(savedInstanceState)
 
+        sliderView.scrollBarSize = 0
+
         swipeRefreshLayout = parent.findViewById(R.id.material_drawer_swipe_refresh)
         headerView.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
             val densityMultiplier = view.resources.displayMetrics.density
@@ -149,6 +161,8 @@ class LegacyDrawer(
         foldersViewModel.getFolderListLiveData().observe(parent) { folderList ->
             setUserFolders(folderList)
         }
+
+
     }
 
     private fun initializeImageLoader() {
@@ -230,6 +244,7 @@ class LegacyDrawer(
         return if (unreadCount > 0) unreadCount.toString() else null
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @Suppress("SpreadOperator")
     private fun setAccounts(displayAccounts: List<DisplayAccount>) {
         val oldSelectedBackgroundColor = selectedBackgroundColor
@@ -243,9 +258,6 @@ class LegacyDrawer(
         val accountItems = displayAccounts.map { displayAccount ->
             val account = displayAccount.account
 
-            val drawerColors = getDrawerColorsForAccount(account)
-            val selectedTextColor = drawerColors.accentColor.toSelectedColorStateList()
-
             val accountItem = ProfileDrawerItem().apply {
                 account.name.let { accountName ->
                     isNameShown = accountName != null
@@ -256,7 +268,7 @@ class LegacyDrawer(
                 tag = account
                 textColor = selectedTextColor
                 descriptionTextColor = selectedTextColor
-                selectedColorInt = drawerColors.selectedColor
+                selectedColorInt = selectedBackgroundColor
                 icon = ImageHolder(createAccountImageUri(account))
                 buildBadgeText(displayAccount)?.let { text ->
                     badgeText = text
@@ -288,6 +300,9 @@ class LegacyDrawer(
     }
 
     private fun addFooterItems() {
+        sliderView.stickyFooterDivider = true
+        sliderView.stickyFooterShadow = false
+
         sliderView.addStickyFooterItem(
             PrimaryDrawerItem().apply {
                 nameRes = R.string.navigation_drawer_action_manage_folders
@@ -339,14 +354,19 @@ class LegacyDrawer(
 
     private fun initializeWithAccountColor(account: Account) {
         getDrawerColorsForAccount(account).let { drawerColors ->
-            selectedBackgroundColor = drawerColors.selectedColor
+
             val selectedTextColor = drawerColors.accentColor.toSelectedColorStateList()
             this.selectedTextColor = selectedTextColor
             folderBadgeStyle = BadgeStyle().apply {
                 textColorStateList = selectedTextColor
             }
         }
-        headerView.accountHeaderBackground.setColorFilter(account.chipColor, PorterDuff.Mode.MULTIPLY)
+
+        headerView.currentProfileName.setTextColor(textColor)
+        headerView.currentProfileEmail.setTextColor(textColor)
+
+        headerView.accountHeaderBackground.alpha = 0f
+        //headerView.accountHeaderBackground.setColorFilter(account.chipColor, PorterDuff.Mode.MULTIPLY)
     }
 
     private fun handleItemClickListener(drawerItem: IDrawerItem<*>) {
@@ -361,6 +381,7 @@ class LegacyDrawer(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun setUserFolders(folderList: FolderList?) {
         this.latestFolderList = folderList
         clearUserFolders()
@@ -372,12 +393,17 @@ class LegacyDrawer(
         }
 
         folderList.unifiedInbox?.let { unifiedInbox ->
-            val unifiedInboxItem = PrimaryDrawerItem().apply {
+            val typedValue = TypedValue()
+            sliderView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+            val colorPrimary = typedValue.data
+
+            val unifiedInboxItem = FolderDrawerItem().apply {
                 iconRes = Icons.Outlined.AllInbox
                 identifier = DRAWER_ID_UNIFIED_INBOX
                 nameRes = R.string.navigation_drawer_unified_inbox_title
                 selectedColorInt = selectedBackgroundColor
                 textColor = selectedTextColor
+                iconColor = selectedTextColor
                 isSelected = unifiedInboxSelected
                 buildBadgeText(unifiedInbox)?.let { text ->
                     badgeText = text
@@ -386,7 +412,6 @@ class LegacyDrawer(
             }
 
             sliderView.addItems(unifiedInboxItem)
-            sliderView.addItems(FixedDividerDrawerItem(identifier = DRAWER_ID_DIVIDER))
 
             if (unifiedInboxSelected) {
                 openedFolderDrawerId = DRAWER_ID_UNIFIED_INBOX
@@ -409,6 +434,7 @@ class LegacyDrawer(
                 }
                 selectedColorInt = selectedBackgroundColor
                 textColor = selectedTextColor
+                iconColor = selectedTextColor
             }
 
             sliderView.addItems(drawerItem)
@@ -441,10 +467,13 @@ class LegacyDrawer(
         deselect()
         openedFolderId = folderId
         for (drawerId in userFolderDrawerIds) {
-            val folder = sliderView.getDrawerItem(drawerId)?.tag as? Folder
+            val drawerItem = sliderView.getDrawerItem(drawerId)
+            val folder = drawerItem?.tag as? Folder
+
             if (folder?.id == folderId) {
                 sliderView.setSelection(drawerId, false)
-                return
+            }else{
+
             }
         }
     }
@@ -516,8 +545,12 @@ class LegacyDrawer(
             intArrayOf(),
         )
 
+        val typedValue = TypedValue()
+        sliderView.context.theme.resolveAttribute(android.R.attr.colorPrimary, typedValue, true)
+        val colorPrimary = typedValue.data
+
         val colors = intArrayOf(
-            this,
+            colorPrimary,
             textColor,
         )
 

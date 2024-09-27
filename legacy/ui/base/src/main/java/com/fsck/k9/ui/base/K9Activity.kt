@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.asLiveData
 import app.k9mail.legacy.ui.theme.ThemeManager
 import com.fsck.k9.controller.push.PushController
+import com.google.android.material.color.DynamicColors
 import java.util.Locale
 import org.koin.android.ext.android.inject
 
