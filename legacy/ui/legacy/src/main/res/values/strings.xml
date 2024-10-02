@@ -516,12 +516,7 @@
     <string name="folder_settings_folder_display_mode_first_class">1st Class</string>
     <string name="folder_settings_folder_display_mode_second_class">2nd Class</string>
 
-    <string name="folder_settings_folder_sync_mode_label">Folder poll class</string>
-    <string name="folder_settings_folder_sync_mode_normal">None</string>
-    <string name="folder_settings_folder_sync_mode_first_class">1st Class</string>
-    <string name="folder_settings_folder_sync_mode_second_class">2nd Class</string>
-    <string name="folder_settings_folder_sync_mode_inherited">Same as display class</string>
-
+    <string name="folder_settings_sync_label">Enable sync</string>
     <string name="folder_settings_push_label">Enable Push</string>
     <string name="folder_settings_notifications_label">Notifications</string>
     <string name="folder_settings_clear_local_folder_action">Clear local messages</string>
@@ -626,12 +621,7 @@
     <string name="account_delete_dlg_title">Remove Account</string>
 
     <string name="folder_list_filter_hint">Folder name contains</string>
-
-    <string name="folder_list_display_mode_label">Show folders…</string>
-    <string name="folder_list_display_mode_all">All folders</string>
-    <string name="folder_list_display_mode_first_class">1st Class folders</string>
-    <string name="folder_list_display_mode_first_and_second_class">1st &amp; 2nd Class folders</string>
-    <string name="folder_list_display_mode_not_second_class">Hide 2nd Class folders</string>
+    <string name="folder_list_show_hidden_folders">Show hidden folders</string>
 
     <string name="account_settings_signature__location_label">Signature position</string>
     <string name="account_settings_signature__location_before_quoted_text">Before quoted message</string>
